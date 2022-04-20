@@ -1,5 +1,5 @@
 # OABX Decrypt (NeoBackup Decrypt)
-Your crappy tool to decrypt backups created [OandbackupX](https://github.com/machiav3lli/oandbackupx).
+Your crappy tool to decrypt backups created by [OAndbackupX/Neo Backup](https://github.com/NeoApplications/Neo-Backup).
 
 ## Usage
 Decrypts backups created with OAndbackupX 6.0 and OAndBackupX/Neo Backup 7.0. The difference between them is, that every backup has its own IV (initialization vector) stored in the properties file (see first line of [release 7.0.0](https://github.com/NeoApplications/Neo-Backup/releases/tag/7.0.0))
@@ -11,15 +11,15 @@ Run it like this:
 # type your password into a variable (it won't be echoed) and you only have to do it once per shell session
 read -s NB_PASSWORD
 # to decrypt OABX 6 backups
-java -jar OABXDecrypt-1.0.jar -file "path/to/encrypted/backup.tar.gz.enc"
+java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.enc"
 # to decrypt NeoBackup 7 backups
-java -jar OABXDecrypt-1.0.jar -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
+java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 
 # Other options to provide the password
 # Read the password from a file (maybe unsecure)
-java -jar OABXDecrypt-1.0.jar -passfile "path/to/passfile" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
+java -jar OABXDecrypt-1.1.jar -passfile "path/to/passfile" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 # or use your password as argument (unsecure)
-java -jar OABXDecrypt-1.0.jar -password "YourSecretPassword" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
+java -jar OABXDecrypt-1.1.jar -password "YourSecretPassword" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 ```
 
 The tool will decrypt the contents and write them into the same path but without the `.enc` suffix which is used by OAndbackupX/Neo Backup to mark a file as encrypted.
