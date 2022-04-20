@@ -26,6 +26,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Arrays;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -59,16 +60,26 @@ public final class Crypto {
     /**
      * Taken from here. Chosen because of API Level 24+ compatibility. Newer algorithms are available
      * with API Level 26+.
-     * https://developer.android.com/guide/topics/security/cryptography#SupportedSecretKeyFactory
+     * <a href="https://developer.android.com/guide/topics/security/cryptography#SupportedSecretKeyFactory">https://developer.android.com/guide/topics/security/cryptography#SupportedSecretKeyFactory</a>
      * <p>
      * The actual choice was inspired by this blog post:
-     * https://www.raywenderlich.com/778533-encryption-tutorial-for-android-getting-started
+     * <a href="https://www.raywenderlich.com/778533-encryption-tutorial-for-android-getting-started">https://www.raywenderlich.com/778533-encryption-tutorial-for-android-getting-started</a>
      */
     private static final String DEFAULT_SECRET_KEY_FACTORY_ALGORITHM = "PBKDF2withHmacSHA256";
     private static final String DEFAULT_CIPHER_ALGORITHM = "AES/GCM/NoPadding";
     private static final int DEFAULT_IV_BLOCK_SIZE = 32;  // 256 bit
+    public static final byte[] DEFAULT_IV;
     private static final int ITERATION_COUNT = 2020;
     private static final int KEY_LENGTH = 256;
+
+    static {
+        try {
+            DEFAULT_IV = new byte[Cipher.getInstance(DEFAULT_CIPHER_ALGORITHM).getBlockSize()];
+            Arrays.fill(DEFAULT_IV, (byte) 0);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static SecretKey generateKeyFromPassword(String password, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         return Crypto.generateKeyFromPassword(password, salt, Crypto.DEFAULT_SECRET_KEY_FACTORY_ALGORITHM, Crypto.DEFAULT_CIPHER_ALGORITHM);
@@ -101,16 +112,17 @@ public final class Crypto {
             final IvParameterSpec iv = new IvParameterSpec(Crypto.initIv(cipherAlgorithm));
             cipher.init(Cipher.ENCRYPT_MODE, secret, iv);
             return new CipherOutputStream(os, cipher);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | InvalidAlgorithmParameterException |
+                 NoSuchPaddingException e) {
             Logger.error("Could not setup encryption: " + e.getMessage());
             throw new CryptoSetupException("Could not setup encryption", e);
         }
     }
 
-    public static CipherInputStream decryptStream(InputStream in, String password, byte[] salt) throws CryptoSetupException {
+    public static CipherInputStream decryptStream(InputStream in, String password, byte[] salt, byte[] iv) throws CryptoSetupException {
         try {
             SecretKey secret = Crypto.generateKeyFromPassword(password, salt);
-            return Crypto.decryptStream(in, secret);
+            return Crypto.decryptStream(in, secret, iv, Crypto.DEFAULT_CIPHER_ALGORITHM);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             Logger.error("Could not setup encryption: " + e.getMessage());
             throw new CryptoSetupException("Could not setup encryption", e);
@@ -118,18 +130,30 @@ public final class Crypto {
     }
 
     public static CipherInputStream decryptStream(InputStream in, SecretKey secret) throws CryptoSetupException {
-        return Crypto.decryptStream(in, secret, Crypto.DEFAULT_CIPHER_ALGORITHM);
+        return Crypto.decryptStream(in, secret, Crypto.DEFAULT_IV, Crypto.DEFAULT_CIPHER_ALGORITHM);
     }
 
-    public static CipherInputStream decryptStream(InputStream in, SecretKey secret, String cipherAlgorithm) throws CryptoSetupException {
+    public static CipherInputStream decryptStream(InputStream in, SecretKey secret, byte[] iv, String cipherAlgorithm) throws CryptoSetupException {
         try {
             Cipher cipher = Cipher.getInstance(cipherAlgorithm);
-            final GCMParameterSpec iv = new GCMParameterSpec(128, Crypto.initIv(cipherAlgorithm));
-            cipher.init(Cipher.DECRYPT_MODE, secret, iv);
+            // I don't know, why NeoBackup can use IvParameterSpec here. It's not accepted in JDK 8 and 11 and causes
+            // java.security.InvalidAlgorithmParameterException: Unsupported parameter: javax.crypto.spec.IvParameterSpec@108c4c35
+            final GCMParameterSpec ivParams = new GCMParameterSpec(128, iv);
+            //IvParameterSpec ivParams = new IvParameterSpec(iv);
+            cipher.init(Cipher.DECRYPT_MODE, secret, ivParams);
             return new CipherInputStream(in, cipher);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | InvalidKeyException e) {
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException |
+                 InvalidKeyException e) {
             Logger.error("Could not setup encryption: " + e.getMessage());
             throw new CryptoSetupException("Could not setup encryption", e);
+        }
+    }
+
+    public static int getCipherBlockSize(){
+        try {
+            return Cipher.getInstance(Crypto.DEFAULT_CIPHER_ALGORITHM).getBlockSize();
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+            return Crypto.DEFAULT_IV_BLOCK_SIZE;
         }
     }
 
