@@ -2,17 +2,17 @@
 Your crappy tool to decrypt backups created by [OAndbackupX/Neo Backup](https://github.com/NeoApplications/Neo-Backup).
 
 ## Usage
-Decrypts backups created with OAndbackupX 6.0 and OAndBackupX/Neo Backup 7.0. The difference between them is, that every backup has its own IV (initialization vector) stored in the properties file (see first line of [release 7.0.0](https://github.com/NeoApplications/Neo-Backup/releases/tag/7.0.0))
+Decrypts backups created with OAndbackupX 6.0 and OAndBackupX/Neo Backup 7-8 The difference between them is, that every backup has its own IV (initialization vector) stored in the properties file (see first line of [release 7.0.0](https://github.com/NeoApplications/Neo-Backup/releases/tag/7.0.0))
 
 Minimum Requirement is JRE 8.
 Download the [latest release](https://github.com/NeoApplications/Neo-Backup/releases/latest).
 Run it like this:
 ```shell
 # type your password into a variable (it won't be echoed) and you only have to do it once per shell session
-read -s NB_PASSWORD
+read -s NB_PASSWORD && export NB_PASSWORD
 # to decrypt OABX 6 backups
 java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.enc"
-# to decrypt NeoBackup 7 backups
+# to decrypt NeoBackup 7-8 backups
 java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 
 # Other options to provide the password
@@ -31,7 +31,7 @@ Beware of the shell's history or other users who could see the process with its 
 Please note, that OAndbackupX uses a property file to save how the file has been encrypted. If you want to decrypt your backups, you also need to modify the corresponding `.properties` file.
 
 ## Why?
-People in the OandbackupX Telegram channel kept asking, how to decrypt their backups. Since I implemented OABX's encryption and the logic is still the same and the code is completely reusable on a computer, I just created this wrapper.
+People in the OandbackupX Telegram channel kept asking, how to decrypt their backups. Since I implemented OABX's encryption and the logic is still the same and the code is reusable on a computer, I just created this wrapper.
 It evolved a bit since it's a small tool, but generally does the same as the NeoBackup's [CryptoUtils.kt](https://github.com/NeoApplications/Neo-Backup/blob/main/app/src/main/java/com/machiav3lli/backup/utils/CryptoUtils.kt) - and it's still written in Java. 
 It'll work as long as OBAX/Neo Backup does not change the encryption logic or algorithm or implements something proper like pgp.
 Your backups are secure. AES is strong and the weakpoint is your password.
