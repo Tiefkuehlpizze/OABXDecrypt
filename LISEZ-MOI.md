@@ -8,17 +8,17 @@ Minimum requis JRE 8.
 Télécharger la [dernière version](https://github.com/NeoApplications/Neo-Backup/releases/latest).
 Exécuter comme ceci:
 ```shell
-# type your password into a variable (it won't be echoed) and you only have to do it once per shell session
+# Inscrivez votre mot de passe dans une variable (il ne sera pas retourné). Vous n'avez besoin de le faire qu'une fois par session.
 read -s NB_PASSWORD && export NB_PASSWORD
-# to decrypt OABX 6 backups
+# pour déchiffrer les sauvegardes OABX 6
 java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.enc"
-# to decrypt NeoBackup 7-8 backups
+# pour déchiffrer les sauvegardes NeoBackup 7-8
 java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 
-# Other options to provide the password
-# Read the password from a file (maybe unsecure)
+# D'autres options pour fournir le mot de passe
+# Lire le mot de passe depuis un fichier (n'est peut-être pas sûr)
 java -jar OABXDecrypt-1.1.jar -passfile "path/to/passfile" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
-# or use your password as argument (unsecure)
+# our indiquez votre mot de passe comme argument (n'est certainement pas sûr)
 java -jar OABXDecrypt-1.1.jar -password "YourSecretPassword" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 ```
 
