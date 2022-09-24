@@ -18,12 +18,12 @@ java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.env" -propf
 # D'autres options pour fournir le mot de passe
 # Lire le mot de passe depuis un fichier (n'est peut-être pas sûr)
 java -jar OABXDecrypt-1.1.jar -passfile "path/to/passfile" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
-# our indiquez votre mot de passe comme argument (n'est certainement pas sûr)
+# ou indiquez votre mot de passe comme argument (n'est certainement pas sûr)
 java -jar OABXDecrypt-1.1.jar -password "YourSecretPassword" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 ```
 
-The tool will decrypt the contents and write them into the same path but without the `.enc` suffix which is used by OAndbackupX/Neo Backup to mark a file as encrypted.
-You should be able to open the file with your favourite file archiver. If it says, the file is corrupted, the password might have been wrong.
+L'outil va déchiffrer le contenu et l'écrire vers le même chemin sans le suffixe «.enc» qui est utilisé pour indiquer les fichiers chiffrés. Vous devriez pouvoir ouvrir le fichier avec votre logiciel d'archivage favori. S'il est indiqué que le fichier est corrompu, le mot de passe était probablement incorrect.
+
 
 Beware of the shell's history or other users who could see the process with its parameter. While the application is running, your password is visible in your command's cmdline (e.g. `/proc/$pid/cmdline`). So make sure, your computer is safe and you're alone. 
 
