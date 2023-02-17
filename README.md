@@ -5,7 +5,7 @@ Your tool to decrypt backups created by [OAndbackupX/Neo Backup](https://github.
 Decrypts backups created with OAndbackupX 6.0 and OAndBackupX/Neo Backup 7-8 The difference between them is, that every backup has its own IV (initialization vector) stored in the properties file (see first line of [release 7.0.0](https://github.com/NeoApplications/Neo-Backup/releases/tag/7.0.0))
 
 Minimum Requirement is JRE 8.
-Download the [latest release](https://github.com/NeoApplications/Neo-Backup/releases/latest).
+Download the [latest release](https://github.com/Tiefkuehlpizze/OABXDecrypt/releases/latest).
 Run it like this:
 ```shell
 # type your password into a variable (it won't be echoed) and you only have to do it once per shell session
