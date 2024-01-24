@@ -13,7 +13,7 @@ read -s NB_PASSWORD && export NB_PASSWORD
 # pour déchiffrer les sauvegardes OABX 6
 java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.enc"
 # pour déchiffrer les sauvegardes NeoBackup 7-8
-java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
+java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.enc" -propfile "path/to/propfile.properties"
 
 # D'autres options pour fournir le mot de passe
 # Lire le mot de passe depuis un fichier (n'est peut-être pas sûr)
