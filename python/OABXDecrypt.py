@@ -85,9 +85,21 @@ OABX Decrypt (NeoBackup Decrypt)
 Reference Python implementation
 
 Examples:
+
+ Specifying File + Propfile + Passfile:
   {f} --file somewhere/data.tar.gz.enc --propfile somewhereelse/user.properties --passfile filewithpass.txt
+
+ Specifying File + Propfile + Output, using NB_PASSWORD env as password:
   {f} --file somewhere/data.tar.gz.enc --propfile somewhereelse/user.properties --output /tmp
-  {f} --bulk backupdir/copied/from/storage --output /tmp --passfile filewithpass.txt
+
+ Bulk operation with password file.  Writes output to the same location as *.enc files:
+  {f} --bulk backupdir/copied/from/storage --passfile filewithpass.txt
+
+ Simulate Bulk operation with password file.  Writes output to the relative location in output:
+  {f} --bulk backupdir/copied/from/storage --output /tmp --passfile filewithpass.txt -s
+
+ Bulk operation with password file, custom output, and custom glob (prefix: com.google.android):
+  {f} --bulk ~/NeoBackup-copied/ --output /tmp/newdir --passfile secret.txt -s --glob "com.google.android*"
 
 Errorlevel:
   0 = success
@@ -114,6 +126,11 @@ Errorlevel:
                         type=str,
                         metavar="BASE_DIR",
                         help="Base dir to start bulk operation (unmodified NeoBackup structure), find all .properties files and decrypt all *.enc")
+    parser.add_argument("--glob",
+                        type=str,
+                        metavar="GLOB_PATTERN",
+                        help="(only valid with --bulk) Set the basedir glob pattern.  Default='**'")
+                        # this is Python thing, so invalid or bad patterns are passed verbatim in.  No error checking is made
 
 
     parser.add_argument("--passfile",
@@ -126,6 +143,9 @@ Errorlevel:
 
 
     parser.add_argument("-o", "--output", type=str, metavar="PATH", help="Output directory.  Default is same base path as --file")
+
+
+    parser.add_argument("-s", "--simulate", action="store_true", help="Simulate instead of actually doing.  To debug if your bulk operation is correct, without making changes to file system.")
 
 
 
@@ -164,10 +184,11 @@ Errorlevel:
         print(f"prop file: {propfile}")
         print(f"out file:  {outfile}")
 
-        oabxdecrypt(encfile,
-                    propfile,
-                    outfile,
-                    password=password_b)
+        if not args.simulate:
+            oabxdecrypt(encfile,
+                        propfile,
+                        outfile,
+                        password=password_b)
 
     elif args.bulk and not (args.file or args.propfile):
         # search and decrypt all, crashes on first bad decryption
@@ -185,8 +206,18 @@ Errorlevel:
         if not bulk_path.is_dir():
             raise NotADirectoryError
 
+        # default pattern
+        glob_pattern = "**/*.properties"
+        if args.glob:
+            glob_pattern = f"{args.glob}/{glob_pattern}"
+
+
+        print(f"BULK DIR: {bulk_path}")
+        print(f"GLOB:     {glob_pattern}")
+
+
         # recursive search through the bulk_path
-        for propfile in bulk_path.glob("**/*.properties"):
+        for propfile in bulk_path.glob(glob_pattern):
             # properties file found, search for encrypted files at that level
 
             # the directory is named the same as the properties file with ".properties"
@@ -200,17 +231,20 @@ Errorlevel:
                     relative = outfile.relative_to(bulk_path)
                     outfile = output_path / relative
 
-                    # create the subdir structure for custom output
-                    outfile.parent.mkdir(parents=True, exist_ok=True)
+                    if not args.simulate:
+                        # create the subdir structure for custom output
+                        outfile.parent.mkdir(parents=True, exist_ok=True)
 
+                print("-" * 40)
                 print(f"enc file:  {encfile}")
                 print(f"prop file: {propfile}")
                 print(f"out file:  {outfile}")
 
-                oabxdecrypt(encfile,
-                            propfile,
-                            outfile,
-                            password=password_b)
+                if not args.simulate:
+                    oabxdecrypt(encfile,
+                                propfile,
+                                outfile,
+                                password=password_b)
 
 
     else:
