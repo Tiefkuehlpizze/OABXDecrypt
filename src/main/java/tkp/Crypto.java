@@ -89,7 +89,7 @@ public final class Crypto {
         SecretKeyFactory factory = SecretKeyFactory.getInstance(keyFactoryAlgorithm);
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, Crypto.ITERATION_COUNT, Crypto.KEY_LENGTH);
         byte[] keyBytes = factory.generateSecret(spec).getEncoded();
-        return new SecretKeySpec(keyBytes, cipherAlgorithm.split(File.separator)[0]);
+        return new SecretKeySpec(keyBytes, cipherAlgorithm.split("/")[0]);
     }
 
     public static CipherOutputStream encryptStream(OutputStream os, String password, byte[] salt) throws CryptoSetupException {
