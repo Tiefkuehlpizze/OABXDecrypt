@@ -11,15 +11,15 @@ Run it like this:
 # type your password into a variable (it won't be echoed) and you only have to do it once per shell session
 read -s NB_PASSWORD && export NB_PASSWORD
 # to decrypt OABX 6 backups
-java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.enc"
+java -jar OABXDecrypt-1.2.jar -file "path/to/encrypted/backup.tar.gz.enc"
 # to decrypt NeoBackup 7-8 backups
-java -jar OABXDecrypt-1.1.jar -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
+java -jar OABXDecrypt-1.2.jar -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 
 # Other options to provide the password
 # Read the password from a file (maybe unsecure)
-java -jar OABXDecrypt-1.1.jar -passfile "path/to/passfile" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
+java -jar OABXDecrypt-1.2.jar -passfile "path/to/passfile" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 # or use your password as argument (unsecure)
-java -jar OABXDecrypt-1.1.jar -password "YourSecretPassword" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
+java -jar OABXDecrypt-1.2.jar -password "YourSecretPassword" -file "path/to/encrypted/backup.tar.gz.env" -propfile "path/to/propfile.properties"
 ```
 
 The tool will decrypt the contents and write them into the same path but without the `.enc` suffix which is used by OAndbackupX/Neo Backup to mark a file as encrypted.
@@ -33,7 +33,7 @@ Note: Custom Salts are not supported!
 Please note, that OAndbackupX uses a property file to save how the file has been encrypted. If you want to decrypt your backups, you also need to modify the corresponding `.properties` file.
 
 ## Why?
-People in the OandbackupX Telegram channel kept asking, how to decrypt their backups. Since I implemented OABX's encryption and the logic is still the same and the code is reusable on a computer, I just created this wrapper.
+People in the OandbackupX Telegram channel kept asking, how to decrypt their backups. Since I implemented OABX's encryption and the logic is still the same and the code is reusable on a computer, I just created this wrapper. This is also meant as educational project how to setup and use crypto libraries.
 It evolved a bit since it's a small tool, but generally does the same as the NeoBackup's [CryptoUtils.kt](https://github.com/NeoApplications/Neo-Backup/blob/main/app/src/main/java/com/machiav3lli/backup/utils/CryptoUtils.kt) - and it's still written in Java. 
 It'll work as long as OBAX/Neo Backup does not change the encryption logic or algorithm or implements something proper like pgp.
 Your backups are secure. AES is strong and the weakpoint is your password.
